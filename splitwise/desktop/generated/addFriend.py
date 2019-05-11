@@ -69,11 +69,11 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dodaj znajomych"))
-        self.label.setText(_translate("Dialog", "Nick znajomego"))
-        self.pushButton.setText(_translate("Dialog", "Szukaj"))
-        self.label_3.setText(_translate("Dialog", "Wynik wyszukania"))
-        self.pushButton_2.setText(_translate("Dialog", "Dodaj >"))
-        self.pushButton_3.setText(_translate("Dialog", "< Usuń"))
-        self.label_2.setText(_translate("Dialog", "List znajomych"))
+        Dialog.setWindowTitle(_translate("Dialog", "Add friends"))
+        self.label.setText(_translate("Dialog", "Friend nickname:"))
+        self.pushButton.setText(_translate("Dialog", "Search"))
+        self.label_3.setText(_translate("Dialog", "Search results:"))
+        self.pushButton_2.setText(_translate("Dialog", "Add >"))
+        self.pushButton_3.setText(_translate("Dialog", "< Remove"))
+        self.label_2.setText(_translate("Dialog", "Friend list:"))
 

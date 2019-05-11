@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dodaj znajomych</string>
+   <string>Add friends</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Nick znajomego</string>
+        <string>Friend nickname:</string>
        </property>
       </widget>
      </item>
@@ -29,7 +29,7 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Szukaj</string>
+        <string>Search</string>
        </property>
       </widget>
      </item>
@@ -42,7 +42,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Wynik wyszukania</string>
+          <string>Search results:</string>
          </property>
         </widget>
        </item>
@@ -56,14 +56,14 @@
        <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>Dodaj &gt;</string>
+          <string>Add &gt;</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_3">
          <property name="text">
-          <string>&lt; Usuń</string>
+          <string>&lt; Remove</string>
          </property>
         </widget>
        </item>
@@ -74,7 +74,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>List znajomych</string>
+          <string>Friend list:</string>
          </property>
         </widget>
        </item>
@@ -106,8 +106,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -122,8 +122,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
