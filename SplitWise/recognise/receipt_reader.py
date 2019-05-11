@@ -22,3 +22,5 @@ def find_amount(img_string):
         if suma is not None:
             return suma.group(1)
     return 0
+
+    
