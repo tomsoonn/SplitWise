@@ -42,8 +42,8 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Rachunki"))
-        self.label.setText(_translate("Dialog", "Oznacz jako:"))
-        self.pushButton_2.setText(_translate("Dialog", "Nizapłacone"))
-        self.pushButton.setText(_translate("Dialog", "Zapłacone"))
+        Dialog.setWindowTitle(_translate("Dialog", "Bills"))
+        self.label.setText(_translate("Dialog", "Mark as:"))
+        self.pushButton_2.setText(_translate("Dialog", "Not paid"))
+        self.pushButton.setText(_translate("Dialog", "Paid"))
 
