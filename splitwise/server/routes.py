@@ -1,7 +1,9 @@
+from bson import ObjectId
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, jwt_refresh_token_required)
-from splitwise.server import app, flask_bcrypt
+
+from splitwise.server.app import flask_bcrypt, app, mongo
 from splitwise.server.schemas import validate_bill, validate_user
 
 
@@ -15,8 +17,7 @@ def auth_user():
     data = validate_user(request.get_json())
     if data['ok']:
         data = data['data']
-        #user = mongo.db.users.find_one({'email': data['email']}, {"_id": 0})
-        user = None
+        user = mongo.db.users.find_one({'email': data['email']}, {"_id": 0})
         if user and flask_bcrypt.check_password_hash(user['password'], data['password']):
             del user['password']
             access_token = create_access_token(identity=data)
@@ -37,7 +38,7 @@ def register():
         data = data['data']
         data['password'] = flask_bcrypt.generate_password_hash(
             data['password'])
-        #mongo.db.users.insert_one(data)
+        mongo.db.users.insert_one(data)
         return jsonify({'ok': True, 'message': 'User created successfully!'}), 200
     else:
         return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
@@ -58,8 +59,7 @@ def refresh():
 def bills():
     if request.method == 'GET':
         query = request.args
-        #data = mongo.db.tasks.find_one({'_id': ObjectId(query['id'])})
-        data = None
+        data = mongo.db.tasks.find_one({'_id': ObjectId(query['id'])})
         return jsonify({'ok': True, 'data': data}), 200
 
     data = request.get_json()
@@ -69,9 +69,8 @@ def bills():
         data['email'] = user['email']
         data = validate_bill(data)
         if data['ok']:
-            #db_response = mongo.db.tasks.insert_one(data['data'])
-            #return_data = mongo.db.tasks.find_one({'_id': db_response.inserted_id})
-            return_data = None
+            db_response = mongo.db.tasks.insert_one(data['data'])
+            return_data = mongo.db.tasks.find_one({'_id': db_response.inserted_id})
             return jsonify({'ok': True, 'data': return_data}), 200
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
