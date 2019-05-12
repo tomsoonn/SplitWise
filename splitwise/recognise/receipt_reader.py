@@ -1,10 +1,29 @@
-import requests
 import json
+import logging
+import os
 import re
 
-def send_request(content):
-    URL = 'https://vision.googleapis.com/v1/images:annotate?key='
+import requests
+from decorator import decorator
 
+from splitwise.recognise.config import GOOGLE_API_KEY
+
+URL = f'https://vision.googleapis.com/v1/images:annotate?key={GOOGLE_API_KEY}'
+logger = logging.getLogger(__name__)
+
+
+@decorator
+def saveRequestDec(fun, *args, **kwargs):
+    logger.debug("Mock request")
+    path = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(path, 'example_response.json')
+    with open(path, 'r') as file:
+        string = file.read()
+        return string
+
+
+@saveRequestDec
+def send_request(content):
     content = {'content': content}
     features = [{'type': 'DOCUMENT_TEXT_DETECTION'}]
     img_context = {'languageHints': ['pl']}
@@ -12,6 +31,7 @@ def send_request(content):
         {'image': content, 'features': features, 'imageContext': img_context}]}
     req = requests.post(URL, data=json.dumps(data))
     return req.text
+
 
 def find_amount(img_string):
     response_text = send_request(img_string)
@@ -22,5 +42,3 @@ def find_amount(img_string):
         if suma is not None:
             return suma.group(1)
     return 0
-
-    

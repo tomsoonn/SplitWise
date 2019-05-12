@@ -1,9 +1,19 @@
-# noinspection PyUnresolvedReferences
-from PyQt5.QtCore import pyqtSignal, pyqtProperty
+import cv2
+import logging
 
-from PyQt5.QtWidgets import QWizardPage, QWizard, QLabel, QFileDialog
+# noinspection PyUnresolvedReferences
+from PyQt5.QtCore import pyqtSignal, pyqtProperty, QObject, Qt, QTimer
+from PyQt5.QtGui import QImage, QPixmap, QPalette, QColor
+from PyQt5.QtWidgets import QWizardPage, QWizard, QFileDialog
+
 from splitwise.desktop.generated import addBillSelectAddType, addBillManual, addBillSelectFile, addBillScan, \
     addBillSummary
+from splitwise.desktop.gui.util import progressBarDecFactory, threadExecutionDec, entryExitDec, \
+    sleepDecFactory, singleClickDecFactory, logExcDec
+from splitwise.desktop.image_refresher import ImageRefresher
+from splitwise.recognise.receipt_scanner import ReceiptScanner
+
+logger = logging.getLogger(__name__)
 
 
 class BasePage(QWizardPage):
@@ -16,20 +26,10 @@ class BasePage(QWizardPage):
 
 
 class SelectAddType(BasePage, addBillSelectAddType.Ui_WizardPage):
-    selectedChanged = pyqtSignal(int)
-
-    @pyqtProperty(type(BasePage), notify=selectedChanged)
-    def selected(self):
-        return self._selected
-
-    @selected.setter
-    def selected(self, val):
-        self._selected = val
 
     def __init__(self, *args):
         super().__init__(*args)
-        self._selected = BasePage
-        self.registerField('selected', self, 'selected', self.selectedChanged)
+        self.selected = BasePage
 
     def nextId(self):
         nextMap = {
@@ -62,26 +62,117 @@ class SelectFile(BasePage, addBillSelectFile.Ui_WizardPage):
         if filename:
             self.selectedFileLabel.setText(filename)
 
+    def nextId(self):
+        return BillWizard.PAGE_ID[ScanFile]
 
-class Scan(BasePage, addBillScan.Ui_WizardPage):
-    pass
+
+class BaseScan(BasePage, addBillScan.Ui_WizardPage):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.result = ''
+        self.recognise.clicked.connect(self.onRecognise)
+        self._setButtonBackground(Qt.red)
+
+    def _setButtonBackground(self, color=Qt.green):
+        pal = self.recognise.palette()
+        pal.setColor(QPalette.Button, QColor(color))
+        self.recognise.setPalette(pal)
+        self.recognise.repaint()
+
+    def displayImage(self, image: QImage):
+        w = self.imageLabel.width()
+        h = self.imageLabel.height()
+        image = image.scaledToWidth(w) if w < h else image.scaledToHeight(h)
+        self.imageLabel.setPixmap(QPixmap.fromImage(image))
+
+    def onRecognise(self):
+        raise NotImplementedError
+
+    def isComplete(self):
+        return self.result != ''
+
+
+class ScanFile(BaseScan):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.filePath = None
+
+    @logExcDec
+    def initializePage(self):
+        self.filePath = self.field('filePath')
+        self.displayImage()
+        QTimer.singleShot(100, lambda: self.recognise.click())
+
+    @logExcDec
+    def displayImage(self, **kwargs):
+        img = cv2.imread(self.filePath)
+        qImg = ImageRefresher.convertOpenCv2QImage(img)
+        super().displayImage(qImg)
+
+    @singleClickDecFactory(buttonName='recognise')
+    @progressBarDecFactory()
+    @sleepDecFactory(sleepTime=1.5)
+    @threadExecutionDec
+    def onRecognise(self):
+        img = cv2.imread(self.filePath)
+        self.result = ReceiptScanner.scanReceipt(img)
+        self.completeChanged.emit()
+        self._setButtonBackground(Qt.green)
+
+
+class Scan(BaseScan):
+    selectedChanged = pyqtSignal(int)
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.imageRefresher = ImageRefresher(self)
+        self.imageRefresher.imageChanged.connect(self.displayImage)
+
+    @logExcDec
+    def initializePage(self):
+        self.imageRefresher.start()
+
+    @logExcDec
+    def cleanupPage(self):
+        self.imageRefresher.stop()
+
+    @entryExitDec
+    @singleClickDecFactory(buttonName='recognise')
+    @progressBarDecFactory()
+    @sleepDecFactory(sleepTime=1.5)
+    @threadExecutionDec
+    def onRecognise(self):
+        frame = self.imageRefresher.frame
+        if frame is not None:
+            self.result = ReceiptScanner.scanReceipt(frame)
+            self.completeChanged.emit()
+            self._setButtonBackground(Qt.green)
 
 
 class Summary(BasePage, addBillSummary.Ui_WizardPage):
 
     def initializePage(self):
-        selected = self.field('selected')
+        wizard = self.wizard()
+        scanPage: Scan = wizard.page(BillWizard.PAGE_ID[Scan])
+        selected = wizard.page(BillWizard.PAGE_ID[SelectAddType]).selected
         if selected == Manual:
             product = self.field('product')
             price = self.field('price')
             text = f"{product}={price}"
-            self.textBrowser.setText(text)
+
         elif selected == SelectFile:
-            self.textBrowser.setText("Not implemented")  # TODO recognise from file
+            scanFilePage: ScanFile = wizard.page(BillWizard.PAGE_ID[ScanFile])
+            text = f"total price: {scanFilePage.result}"
+
         elif selected == Scan:
-            self.textBrowser.setText("Not implemented")  # TODO recognise from camera
+            text = f"total price: {scanPage.result}"
+
         else:
             assert False
+
+        self.textBrowser.setText(text)
+
+        scanPage.imageRefresher.stop()
 
     def nextId(self):
         return -1
@@ -90,11 +181,12 @@ class Summary(BasePage, addBillSummary.Ui_WizardPage):
 class BillWizard(QWizard):
     pyqtSignal()
     PAGE_ID = {
-        p: i for i, p in enumerate((SelectAddType, Manual, SelectFile, Scan, Summary))
+        p: i for i, p in enumerate((SelectAddType, Manual, SelectFile, ScanFile, Scan, Summary))
     }
 
     def __init__(self, *args):
         super().__init__(*args)
+        self.setWindowTitle('Bill Wizard')
         self.setOptions(QWizard.IndependentPages)
         for pageClass, pageId in self.PAGE_ID.items():
             self.setPage(pageId, pageClass(self))

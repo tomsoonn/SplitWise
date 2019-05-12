@@ -8,3 +8,4 @@ from splitwise.desktop.gui.util import savePositionClassDec
 class AddFriendDialog(QDialog, Ui_Dialog):
     def __init__(self, *args):
         super().__init__(*args)
+        self.setupUi(self)

@@ -16,6 +16,6 @@ pyqt5
 
 recognise:
 ```
-Google API key needs to be given in receipt_reader.py:
-  URL = 'https://vision.googleapis.com/v1/images:annotate?key=YOUR_API_KEY'
+Google API key needs to be given in splitwise.recognise.config.py:
+  GOOGLE_API_KEY = 'YOUR_API_KEY'
 ```
