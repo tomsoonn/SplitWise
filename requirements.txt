@@ -8,3 +8,4 @@ jsonschema>=2.5.1
 decorator>=4.3.0
 flask_restful
 opencv-python
+PyQt5

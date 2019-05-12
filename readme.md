@@ -1,3 +1,4 @@
+##Splitwise
 
 flask server:
 ```
@@ -5,6 +6,11 @@ FLASK_APP = splitwise/server/app.py
 FLASK_ENV = development
 FLASK_DEBUG = 1
 python -m flask run
+```
+
+database:
+```
+mongodb://localhost:27017/SplitwiseDatabase
 ```
 
 desktop application:
