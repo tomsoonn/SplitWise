@@ -39,23 +39,19 @@ bill_schema = {
             "type": "string"
         },
         "price": {
-            "type": "float"
+            "type": "number"
         },
         "email": {
             "type": "string",
             "format": "email"
         },
-        "owner": {
-            "type": "string",
-        },
         "participants": {
             "type": "array",
             "additionalItems": {"type": "string"},
             "uniqueItems": True
-
         }
     },
-    "required": ["email", "status", "title"],
+    "required": ["email", "price", "title"],
     "additionalProperties": False
 }
 

@@ -2,7 +2,6 @@ from bson import ObjectId
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, jwt_refresh_token_required)
-
 from splitwise.server.app import flask_bcrypt, app, mongo
 from splitwise.server.schemas import validate_bill, validate_user
 
@@ -59,7 +58,7 @@ def refresh():
 def bills():
     if request.method == 'GET':
         query = request.args
-        data = mongo.db.tasks.find_one({'_id': ObjectId(query['id'])})
+        data = mongo.db.bills.find_one({'_id': ObjectId(query['id'])})
         return jsonify({'ok': True, 'data': data}), 200
 
     data = request.get_json()
@@ -69,8 +68,8 @@ def bills():
         data['email'] = user['email']
         data = validate_bill(data)
         if data['ok']:
-            db_response = mongo.db.tasks.insert_one(data['data'])
-            return_data = mongo.db.tasks.find_one({'_id': db_response.inserted_id})
+            db_response = mongo.db.bills.insert_one(data['data'])
+            return_data = mongo.db.bills.find_one({'_id': db_response.inserted_id})
             return jsonify({'ok': True, 'data': return_data}), 200
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400

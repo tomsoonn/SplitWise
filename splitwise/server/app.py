@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os
 
 from flask import Flask
 from flask_bcrypt import Bcrypt
@@ -12,8 +11,8 @@ from splitwise.server.json_encoder import JSONEncoder
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
-app.config['MONGO_URI'] = "mongodb://localhost:27017/myDatabase"
-app.config['JWT_SECRET_KEY'] = os.environ.get('SECRET')
+app.config['MONGO_URI'] = "mongodb://localhost:27017/SplitwiseDatabase"
+app.config['JWT_SECRET_KEY'] = 'SECRET'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
 app.json_encoder = JSONEncoder
 
