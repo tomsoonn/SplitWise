@@ -1,4 +1,4 @@
-##Splitwise
+## SplitWise
 
 flask server:
 ```
