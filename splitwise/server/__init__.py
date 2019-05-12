@@ -1,6 +1,10 @@
-from splitwise import configLogger
+import logging
 
-configLogger()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-from splitwise.server import app
+from splitwise.server.app import app
 from splitwise.server import routes
+
+if __name__ == '__main__':
+    app.run(debug=True)

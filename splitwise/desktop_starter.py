@@ -1,8 +1,14 @@
+import logging
 import os
 import sys
 
-from splitwise import configLogger
 from splitwise.desktop.gui.main_window import MainWindow
+
+
+def configLogger():
+    logging.basicConfig()
+    logger = logging.getLogger("splitwise")
+    logger.setLevel(logging.DEBUG)
 
 
 def application():

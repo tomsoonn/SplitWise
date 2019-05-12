@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 
 from flask import Flask
@@ -8,6 +9,7 @@ from flask_pymongo import PyMongo
 
 from splitwise.server.json_encoder import JSONEncoder
 
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 app.config['MONGO_URI'] = "mongodb://localhost:27017/myDatabase"
@@ -18,3 +20,5 @@ app.json_encoder = JSONEncoder
 mongo = PyMongo(app)
 flask_bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
+
+logger.debug('App loaded')
