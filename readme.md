@@ -8,7 +8,11 @@ FLASK_DEBUG = 1
 python -m flask run
 ```
 
-database:
+setting mongo store location:
+```
+mongod --dbpath <custom_path>
+```
+database connection:
 ```
 mongodb://localhost:27017/SplitwiseDatabase
 ```
