@@ -21,29 +21,18 @@ user_schema = {
     "additionalProperties": False
 }
 
-
-def validate_user(data):
-    try:
-        validate(data, user_schema)
-    except ValidationError as e:
-        return {'ok': False, 'message': e}
-    except SchemaError as e:
-        return {'ok': False, 'message': e}
-    return {'ok': True, 'data': data}
-
-
 bill_schema = {
     "type": "object",
     "properties": {
         "title": {
             "type": "string"
         },
-        "price": {
-            "type": "number"
-        },
         "email": {
             "type": "string",
             "format": "email"
+        },
+        "bill": {
+            "type": "string"
         },
         "participants": {
             "type": "array",
@@ -55,10 +44,93 @@ bill_schema = {
     "additionalProperties": False
 }
 
+bill_details_schema = {
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "owner": {
+            "type": "string",
+            "format": "email"
+        },
+        "total_price": {
+            "type": "number"
+        },
+        "date": {
+            "type": "string",
+            "format": "date"
+        },
+        "products": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": ["number"]
+                  }
+                },
+                "required": [
+                  "name", "price"
+                ]
+            }
+        },
+    },
+    "required": ["total_price"], #FIXME required all
+    "additionalProperties": False
+}
+
+due_schema = {
+    "type": "object",
+    "properties": {
+        "due_from": {
+            "type": "string",
+            "format": "email"
+        },
+        "due_to": {
+            "type": "string",
+            "format": "email"
+        },
+        "amount": {
+            "type": "number"
+        },
+        "bill_id": {
+            "type": "string",
+        },
+        "product": {
+            "type": "string",
+        },
+        "paid": {
+            "type": "boolean"
+        }
+    },
+    "required": ["due_from", "due_to", "amount", "bill_id", "product"],
+    "additionalProperties": False
+}
+
+
+def validate_user(data):
+    return validate_schema(data, user_schema)
+
 
 def validate_bill(data):
+    return validate_schema(data, bill_schema)
+
+
+def validate_bill_details(data):
+    return validate_schema(data, bill_details_schema)
+
+
+def validate_due(data):
+    return validate_schema(data, due_schema)
+
+
+def validate_schema(data, schema):
     try:
-        validate(data, bill_schema)
+        validate(data, schema)
     except ValidationError as e:
         return {'ok': False, 'message': e}
     except SchemaError as e:
