@@ -50,7 +50,7 @@ class HomePage extends React.Component {
             const base64data = reader.result;
             console.log(base64data);
 
-            fetch('https://localhost:0000/bills/', {        //FIXME change port number
+            fetch('http://127.0.0.1:5000/bills/', {        //FIXME change port number
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -76,7 +76,7 @@ class HomePage extends React.Component {
     countDues() {
         let email = this.state.email;
 
-        fetch('https://localhost:0000/dues/', {        //FIXME change port number
+        fetch('http://127.0.0.1:5000/dues/', {        //FIXME change port number
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

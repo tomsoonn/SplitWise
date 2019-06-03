@@ -49,7 +49,7 @@ class LoginPage extends React.Component {
     register() {
         let password = this.state.password;
         let email = this.state.email;
-        fetch('https://localhost:0000/register/', {        //FIXME change port number
+        fetch('http://127.0.0.1:5000/register/', {        //FIXME change port number
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -65,7 +65,7 @@ class LoginPage extends React.Component {
     signIn() {
         let password = this.state.password;
         let email = this.state.email;
-        fetch('https://localhost:0000/login/', {        //FIXME change port number
+        fetch('http://127.0.0.1:5000/login/', {        //FIXME change port number
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
