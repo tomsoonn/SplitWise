@@ -17,7 +17,7 @@ def auth_user():
     data = validate_user(request.get_json())
     if data['ok']:
         data = data['data']
-        user = db.find_user(data)
+        user = db.find_user(data['email'])
         if user and flask_bcrypt.check_password_hash(user['password'], data['password']):
             del user['password']
             access_token = create_access_token(identity=data)
@@ -36,10 +36,15 @@ def register():
     data = validate_user(request.get_json())
     if data['ok']:
         data = data['data']
-        data['password'] = flask_bcrypt.generate_password_hash(
-            data['password'])
-        db.add_user(data)
-        return jsonify({'ok': True, 'message': 'User created successfully!'}), 200
+        user = db.find_user(data['email'])
+        if user:
+            return jsonify({'ok': True, 'message': 'This email is already taken'}), 401
+        else:
+            data['password'] = flask_bcrypt.generate_password_hash(
+                data['password'])
+            data['friends'] = []
+            db.add_user(data)
+            return jsonify({'ok': True, 'message': 'User created successfully!'}), 200
     else:
         return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
@@ -60,6 +65,31 @@ def refresh():
 def get_users():
         users = db.get_users()
         return jsonify({'ok': True, 'data': users}), 200
+
+
+# delete or add friend
+@app.route('/friends', methods=['POST', 'GET'])
+@jwt_required
+def friends():
+    current_user = get_jwt_identity()
+    user_email = current_user['email']
+    if request.method == 'GET':
+        query = request.args
+        user = db.find_user(query['friend'])
+        if user:
+            data = db.del_friend(user_email, query['friend'])
+            return jsonify({'ok': True, 'data': data}), 200
+        else:
+            return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
+
+    data = request.get_json()
+    if request.method == 'POST':
+        user = db.find_user(data['friend'])
+        if user:
+            data = db.add_friend(user_email, data['friend'])
+            return jsonify({'ok': True, 'data': data}), 200
+        else:
+            return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
 
 
 # get bill or add bill

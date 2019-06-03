@@ -3,8 +3,8 @@ from bson.objectid import ObjectId
 from splitwise.server.app import mongo
 
 
-def find_user(data):
-    return mongo.db.users.find_one({'email': data['email']}, {"_id": 0})
+def find_user(email):
+    return mongo.db.users.find_one({'email': email}, {"_id": 0})
 
 
 def add_user(data):
@@ -14,6 +14,21 @@ def add_user(data):
 def get_users():
     users = mongo.db.users.find({}, {"_id": 0, "password": 0})
     return to_array(users)
+
+
+def del_friend(user, friend):
+    return mongo.db.users.update(
+        {"email": user},
+        {"$pull": {"friends": friend}}
+    )
+
+
+def add_friend(user, friend):
+    return mongo.db.users.update(
+        {"email": user},
+        {"$addToSet": {"friends": friend}}
+    )
+
 
 
 def add_bill(data):
