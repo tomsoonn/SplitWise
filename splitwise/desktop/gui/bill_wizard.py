@@ -162,10 +162,10 @@ class Summary(BasePage, addBillSummary.Ui_WizardPage):
 
         elif selected == SelectFile:
             scanFilePage: ScanFile = wizard.page(BillWizard.PAGE_ID[ScanFile])
-            text = f"total price: {scanFilePage.result}"
+            text = f"Scan product price={scanFilePage.result}"
 
         elif selected == Scan:
-            text = f"total price: {scanPage.result}"
+            text = f"Scan product price={scanPage.result}"
 
         else:
             assert False
@@ -179,7 +179,6 @@ class Summary(BasePage, addBillSummary.Ui_WizardPage):
 
 
 class BillWizard(QWizard):
-    pyqtSignal()
     PAGE_ID = {
         p: i for i, p in enumerate((SelectAddType, Manual, SelectFile, ScanFile, Scan, Summary))
     }

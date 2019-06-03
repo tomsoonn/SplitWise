@@ -6,39 +6,58 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>645</width>
-    <height>375</height>
+    <width>953</width>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Bills</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QTableView" name="tableView"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="4,1">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Mark as:</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+       <item>
+        <widget class="QTableView" name="billView">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="paidButton">
+           <property name="text">
+            <string>Paid</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="text">
-        <string>Not paid</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Paid</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+       <item>
+        <widget class="QListView" name="friendView">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="addFriendButton">
+         <property name="text">
+          <string>Add friend to bill</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

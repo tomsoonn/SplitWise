@@ -24,12 +24,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Search</string>
+      <widget class="QLineEdit" name="filterLine">
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -47,12 +44,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableView" name="tableView">
+        <widget class="QListView" name="possibleFriendsView">
          <property name="minimumSize">
           <size>
            <width>100</width>
            <height>150</height>
           </size>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
          </property>
         </widget>
        </item>
@@ -61,14 +61,14 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="addButton">
          <property name="text">
           <string>Add &gt;</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="removeButton">
          <property name="text">
           <string>&lt; Remove</string>
          </property>
@@ -86,12 +86,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QListView" name="listView">
+        <widget class="QListView" name="friendView">
          <property name="minimumSize">
           <size>
            <width>100</width>
            <height>150</height>
           </size>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
          </property>
         </widget>
        </item>
