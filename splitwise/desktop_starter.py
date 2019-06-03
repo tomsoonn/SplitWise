@@ -3,6 +3,7 @@ import os
 import sys
 
 from splitwise.desktop.gui.main_window import MainWindow
+from splitwise.desktop.login_dialog import LoginDialog
 
 
 def configLogger():
@@ -16,9 +17,12 @@ def application():
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
-    app.exec_()
+
+    dialog = LoginDialog()
+    if dialog.exec():
+        mainWindow = MainWindow(dialog.data)
+        mainWindow.show()
+        app.exec_()
 
 
 if __name__ == '__main__':

@@ -4,6 +4,9 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, jwt_refresh_token_required)
 from splitwise.server.app import flask_bcrypt, app, mongo
 from splitwise.server.schemas import validate_bill, validate_user
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @app.route('/')
@@ -58,7 +61,10 @@ def refresh():
 def bills():
     if request.method == 'GET':
         query = request.args
-        data = mongo.db.bills.find_one({'_id': ObjectId(query['id'])})
+        try:
+            data = mongo.db.bills.find_one({'_id': ObjectId(query['id'])})
+        except KeyError:
+            data = list(mongo.db.bills.find({'email': query['email']}))
         return jsonify({'ok': True, 'data': data}), 200
 
     data = request.get_json()
@@ -73,6 +79,29 @@ def bills():
             return jsonify({'ok': True, 'data': return_data}), 200
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
+
+
+@app.route('/users', methods=['GET', 'POST'])
+def users():
+    if request.method == 'POST':
+        data = request.get_json()
+        type_ = data['type']
+        email = data['email']
+        friendName = data['friendName']
+        if type_ == 'ADD':
+            logger.debug("ADD users")  # TODO add friend
+        elif type_ == 'REM':
+            logger.debug("REM users")  # TODO remove friend
+        return jsonify({'ok': True})
+
+    if request.method == 'GET':
+        data = request.get_json()
+        try:
+            forUser = data['email']
+        except KeyError:  # TODO extract all users
+            return jsonify({'ok': True, 'data': [{'name': 'ala'}, {'name': 'kot'}]})
+        else:  # TODO extract friends of users with email
+            return jsonify({'ok': True, 'data': [{'name': 'pies'}]})
 
 
 if __name__ == '__main__':

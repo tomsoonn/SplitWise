@@ -61,10 +61,16 @@ class Ui_MainWindow(object):
         self.reviewBill = QtWidgets.QPushButton(self.dockWidgetContents_2)
         self.reviewBill.setObjectName("reviewBill")
         self.verticalLayout_2.addWidget(self.reviewBill)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.refreshButton = QtWidgets.QPushButton(self.dockWidgetContents_2)
+        self.refreshButton.setObjectName("refreshButton")
+        self.horizontalLayout.addWidget(self.refreshButton)
         self.label = QtWidgets.QLabel(self.dockWidgetContents_2)
         self.label.setObjectName("label")
-        self.verticalLayout_2.addWidget(self.label)
-        self.billView = QtWidgets.QListWidget(self.dockWidgetContents_2)
+        self.horizontalLayout.addWidget(self.label)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.billView = QtWidgets.QTableView(self.dockWidgetContents_2)
         self.billView.setObjectName("billView")
         self.verticalLayout_2.addWidget(self.billView)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
@@ -75,10 +81,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Split Wise"))
         self.addBill.setText(_translate("MainWindow", "Add bill"))
         self.addFriend.setText(_translate("MainWindow", "Add friends"))
         self.label_2.setText(_translate("MainWindow", "Friends:"))
         self.reviewBill.setText(_translate("MainWindow", "Review bills"))
+        self.refreshButton.setText(_translate("MainWindow", "Refresh"))
         self.label.setText(_translate("MainWindow", "Last bills:"))
 
