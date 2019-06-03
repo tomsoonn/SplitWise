@@ -77,7 +77,7 @@ def friends():
     if request.method == 'GET':
         user = db.find_user(user_email)
         if user:
-            return jsonify({'ok': True, 'data': user}), 200
+            return jsonify({'ok': True, 'data': user['friends']}), 200
         else:
             return jsonify({'ok': False, 'message': 'Cannot find user'}), 401
 
