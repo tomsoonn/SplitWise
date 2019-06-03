@@ -28,9 +28,15 @@ class HomePage extends React.Component {
             email: '',
             participants: [],
             bill: {},
+            due: ''
         };
         this.uploadReceipt = this.uploadReceipt.bind(this);
         this.onFileChange = this.onFileChange.bind(this);
+        this.countDues = this.countDues.bind(this);
+    }
+
+    componentDidMount() {
+        this.countDues();
     }
 
     uploadReceipt () {
@@ -66,6 +72,23 @@ class HomePage extends React.Component {
             bill: file,
         })
     };
+
+    countDues() {
+        let email = this.state.email;
+
+        fetch('https://localhost:0000/dues/', {        //FIXME change port number
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "due_from": email
+            })
+        }).then((response) => {this.setState({
+            ...this.state,
+            due: response.body})})
+    }
 
     render() {
         const {classes, ...rest} = this.props;
@@ -140,11 +163,18 @@ class HomePage extends React.Component {
                                     Upload receipt
                                 </Button>
                             </GridItem>
-                            <GridItem>
-                                <>
-                                    bills
-                                </>
+                            <GridItem xs={12} sm={12} md={8}>
+                                <Button onClick={this.countDues}>
+                                    Count my dues
+                                </Button>
                             </GridItem>
+                            <GridItem xs={12} sm={12} md={8}>
+                                <label>
+                                    Your due:
+                                    {this.state.due}
+                                </label>
+                            </GridItem>
+                            <br/><br/>
                         </GridContainer>
                     </div>
                 </div>
