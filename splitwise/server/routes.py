@@ -79,7 +79,7 @@ def friends():
         if user:
             return jsonify({'ok': True, 'data': user}), 200
         else:
-            return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
+            return jsonify({'ok': False, 'message': 'Cannot find user'}), 401
 
     data = request.get_json()
     if request.method == 'POST':
@@ -88,7 +88,7 @@ def friends():
             info = db.add_friend(user_email, data['friend'])
             return jsonify({'ok': True, 'data': info}), 200
         else:
-            return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
+            return jsonify({'ok': False, 'message': 'Cannot find user'}), 401
 
 
 @app.route('/delFriend', methods=['POST'])
@@ -127,10 +127,18 @@ def bills():
                 return_data = db.find_bill({'_id': db_response.inserted_id})
                 return jsonify({'ok': True, 'data': return_data}), 200
             else:
-                return jsonify({'ok': True, 'message': 'Bill does not exists'}), 401
+                return jsonify({'ok': False, 'message': 'Bill does not exists'}), 401
 
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
+
+
+@app.route('/delDue', methods=['POST'])
+@jwt_required
+def del_due():
+    data = request.get_json()
+    info = db.del_bill(data)
+    return jsonify({'ok': True, 'data': info}), 200
 
 
 # analyze bill image
@@ -179,12 +187,20 @@ def dues():
                 db.add_due(data)
                 return jsonify({'ok': True, 'message': 'Due successfully added.'}), 200
             else:
-                return jsonify({'ok': True, 'message': 'Wrong email or bill id'}), 401
+                return jsonify({'ok': False, 'message': 'Wrong email or bill id'}), 401
 
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
     return
+
+
+@app.route('/delDue', methods=['POST'])
+@jwt_required
+def del_due():
+    data = request.get_json()
+    info = db.del_due(data)
+    return jsonify({'ok': True, 'data': info}), 200
 
 
 # pay due

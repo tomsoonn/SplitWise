@@ -45,6 +45,11 @@ def find_bill(query):
     return to_array(bills)
 
 
+def del_bill(query):
+    query = transform(query)
+    return mongo.db.bills.remove(query)
+
+
 def add_due(data):
     return mongo.db.dues.insert_one(data)
 
@@ -53,6 +58,11 @@ def find_due(query):
     query = transform(query)
     dues = mongo.db.dues.find(query)
     return to_array(dues)
+
+
+def del_due(query):
+    query = transform(query)
+    return mongo.db.dues.remove(query)
 
 
 def to_array(cursor):
