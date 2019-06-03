@@ -30,6 +30,10 @@ def add_friend(user, friend):
     )
 
 
+def set_paid(query):
+    query = transform(query)
+    return mongo.db.dues.update(query, {"$set": {"paid": True}})
+
 
 def add_bill(data):
     return mongo.db.bills.insert_one(data)
@@ -42,7 +46,7 @@ def find_bill(query):
 
 
 def add_due(data):
-    return mongo.db.users.insert_one(data)
+    return mongo.db.dues.insert_one(data)
 
 
 def find_due(query):
@@ -59,7 +63,8 @@ def to_array(cursor):
 
 
 def transform(query):
-    query = query.to_dict(flat=True)
+    if type(query) != dict:
+        query = query.to_dict(flat=True)
     for e in query:
         if e == "_id":
             query[e] = ObjectId(query[e])

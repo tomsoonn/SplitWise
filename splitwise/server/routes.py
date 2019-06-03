@@ -1,7 +1,8 @@
+from bson import ObjectId
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, get_jwt_identity, jwt_refresh_token_required)
-from splitwise.server.app import flask_bcrypt, app, mongo
+from splitwise.server.app import flask_bcrypt, app
 from splitwise.server.schemas import validate_bill, validate_user, validate_bill_details, validate_due
 from splitwise.server import db
 from splitwise.recognise.receipt_reader import find_amount
@@ -108,9 +109,14 @@ def bills():
         #data['owner'] = user['email']
         data = validate_bill_details(data)
         if data['ok']:
-            db_response = db.add_bill(data['data'])
-            return_data = mongo.db.bills.find_one({'_id': db_response.inserted_id})
-            return jsonify({'ok': True, 'data': return_data}), 200
+            data = data['data']
+            if db.find_bill(data['bill_id']):
+                db_response = db.add_bill(data)
+                return_data = db.find_bill({'_id': db_response.inserted_id})
+                return jsonify({'ok': True, 'data': return_data}), 200
+            else:
+                return jsonify({'ok': True, 'message': 'Bill does not exists'}), 401
+
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
@@ -133,7 +139,7 @@ def analyze_image():
             if return_data['ok']:
                 return return_data, 200
             else:
-                return jsonify({'ok': False, 'message': 'Bad image analyze data: {}'.format(data['message'])}), 400
+                return jsonify({'ok': False, 'message': 'Bad image analyze data: {}'.format(data['message'])}), 401
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
@@ -151,12 +157,27 @@ def dues():
     if request.method == 'POST':
         data = validate_due(data)
         if data['ok']:
-            mongo.db.bills.insert_one(data['data'])
-            return jsonify({'ok': True, 'message': 'Due successfully added.'}), 200
+            data = data['data']
+            if (db.find_user(data['due_from']) and db.find_user(data['due_to'])
+                    and db.find_bill({"_id": ObjectId(data['bill_id'])})):
+                db.add_due(data)
+                return jsonify({'ok': True, 'message': 'Due successfully added.'}), 200
+            else:
+                return jsonify({'ok': True, 'message': 'Wrong email or bill id'}), 401
+
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
     return
+
+
+# pay due
+@app.route('/pay', methods=['GET'])
+@jwt_required
+def pay():
+    query = request.args
+    data = db.set_paid(query)
+    return jsonify({'ok': True, 'data': data}), 200
 
 
 if __name__ == '__main__':
