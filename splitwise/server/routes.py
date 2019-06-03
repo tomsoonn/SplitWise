@@ -133,9 +133,9 @@ def bills():
             return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
 
 
-@app.route('/delDue', methods=['POST'])
+@app.route('/delBill', methods=['POST'])
 @jwt_required
-def del_due():
+def del_bill():
     data = request.get_json()
     info = db.del_bill(data)
     return jsonify({'ok': True, 'data': info}), 200
