@@ -75,11 +75,9 @@ def friends():
     current_user = get_jwt_identity()
     user_email = current_user['email']
     if request.method == 'GET':
-        query = request.args
-        user = db.find_user(query['friend'])
+        user = db.find_user(user_email)
         if user:
-            data = db.del_friend(user_email, query['friend'])
-            return jsonify({'ok': True, 'data': data}), 200
+            return jsonify({'ok': True, 'data': user}), 200
         else:
             return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
 
@@ -87,10 +85,20 @@ def friends():
     if request.method == 'POST':
         user = db.find_user(data['friend'])
         if user:
-            data = db.add_friend(user_email, data['friend'])
-            return jsonify({'ok': True, 'data': data}), 200
+            info = db.add_friend(user_email, data['friend'])
+            return jsonify({'ok': True, 'data': info}), 200
         else:
             return jsonify({'ok': True, 'message': 'Cannot find user'}), 401
+
+
+@app.route('/delFriend', methods=['POST'])
+@jwt_required
+def del_friend():
+    user = get_jwt_identity()
+    email = user['email']
+    data = request.get_json()
+    info = db.del_friend(email, data['friend'])
+    return jsonify({'ok': True, 'data': info}), 200
 
 
 # get bill or add bill
@@ -107,6 +115,7 @@ def bills():
     if request.method == 'POST':
         #user = get_jwt_identity()
         #data['owner'] = user['email']
+        data['total_price'] = float(data['total_price'])
         data = validate_bill_details(data)
         if data['ok']:
             data = data['data']
@@ -155,6 +164,7 @@ def dues():
 
     data = request.get_json()
     if request.method == 'POST':
+        data['amount'] = float(data['amount'])
         data = validate_due(data)
         if data['ok']:
             data = data['data']
@@ -172,12 +182,12 @@ def dues():
 
 
 # pay due
-@app.route('/pay', methods=['GET'])
+@app.route('/pay', methods=['POST'])
 @jwt_required
 def pay():
-    query = request.args
-    data = db.set_paid(query)
-    return jsonify({'ok': True, 'data': data}), 200
+    data = request.get_json()
+    info = db.set_paid(data)
+    return jsonify({'ok': True, 'data': info}), 200
 
 
 if __name__ == '__main__':
