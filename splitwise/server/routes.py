@@ -64,8 +64,8 @@ def refresh():
 @app.route('/users', methods=['GET'])
 @jwt_required
 def get_users():
-        users = db.get_users()
-        return jsonify({'ok': True, 'data': users}), 200
+    users = db.get_users()
+    return jsonify({'ok': True, 'data': users}), 200
 
 
 # delete or add friend
@@ -113,9 +113,12 @@ def bills():
     data = request.get_json()
 
     if request.method == 'POST':
-        #user = get_jwt_identity()
-        #data['owner'] = user['email']
-        data['total_price'] = float(data['total_price'])
+        # user = get_jwt_identity()
+        # data['owner'] = user['email']
+        try:
+            data['total_price'] = float(data['total_price'])
+        except ValueError:
+            return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['total_price'])}), 400
         data = validate_bill_details(data)
         if data['ok']:
             data = data['data']
@@ -140,8 +143,8 @@ def analyze_image():
         data['email'] = user['email']
         data = validate_bill(data)
         if data['ok']:
-            bill_details = find_amount(data["bill"]) #FIXME get_bill_details
-            #return_data = validate_bill_details(bill_details)
+            bill_details = find_amount(data["bill"])  # FIXME get_bill_details
+            # return_data = validate_bill_details(bill_details)
             return_data = jsonify()
             return_data['ok'] = True
             return_data['data'] = {"total_price": bill_details}
@@ -164,7 +167,10 @@ def dues():
 
     data = request.get_json()
     if request.method == 'POST':
-        data['amount'] = float(data['amount'])
+        try:
+            data['amount'] = float(data['amount'])
+        except ValueError:
+            return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['amount'])}), 400
         data = validate_due(data)
         if data['ok']:
             data = data['data']

@@ -107,7 +107,7 @@ due_schema = {
             "type": "boolean"
         }
     },
-    "required": ["due_from", "due_to", "amount", "bill_id", "product"],
+    "required": ["due_from", "due_to", "amount", "bill_id", "product", "paid"],
     "additionalProperties": False
 }
 
