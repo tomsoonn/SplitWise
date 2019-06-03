@@ -37,6 +37,9 @@ class HomePage extends React.Component {
         let reader = new FileReader();
         console.log(this.state.bill[0]);
         reader.readAsDataURL(this.state.bill[0]);
+        let title = this.state.title;
+        let email = this.state.email;
+        let participants = this.state.participants;
         reader.onloadend = function() {
             const base64data = reader.result;
             console.log(base64data);
@@ -49,9 +52,9 @@ class HomePage extends React.Component {
                 },
                 body: JSON.stringify({
                     bill: base64data,
-                    title: this.state.title,
-                    email: this.state.email,
-                    participants: this.state.participants,
+                    title: title,
+                    email: email,
+                    participants: participants,
                 })
             })
         }

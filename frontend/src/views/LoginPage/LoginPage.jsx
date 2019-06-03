@@ -28,8 +28,12 @@ class LoginPage extends React.Component {
         super(props);
         // we use this to make the card to appear after the page has been rendered
         this.state = {
-            cardAnimaton: "cardHidden"
+            cardAnimaton: "cardHidden",
+            email: "",
+            password: "",
+            firstName: ""
         };
+        this.register = this.register.bind(this);
     }
 
     componentDidMount() {
@@ -40,6 +44,38 @@ class LoginPage extends React.Component {
             }.bind(this),
             700
         );
+    }
+
+    register() {
+        let password = this.state.password;
+        let email = this.state.email;
+        fetch('https://localhost:0000/register/', {        //FIXME change port number
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                password: password,
+                email: email,
+            })
+        })
+    }
+
+    signIn() {
+        let password = this.state.password;
+        let email = this.state.email;
+        fetch('https://localhost:0000/login/', {        //FIXME change port number
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                password: password,
+                email: email,
+            })
+        })
     }
 
     render() {
@@ -80,6 +116,10 @@ class LoginPage extends React.Component {
                                         </CardHeader>
                                         <CardBody>
                                             <CustomInput
+                                                onChangeText={(firstName) => this.setState({
+                                                    ...this.state,
+                                                    firstName
+                                                })}
                                                 labelText="First Name..."
                                                 id="first"
                                                 formControlProps={{
@@ -95,6 +135,10 @@ class LoginPage extends React.Component {
                                                 }}
                                             />
                                             <CustomInput
+                                                onChangeText={(email) => this.setState({
+                                                    ...this.state,
+                                                    email
+                                                })}
                                                 labelText="Email..."
                                                 id="email"
                                                 formControlProps={{
@@ -110,6 +154,10 @@ class LoginPage extends React.Component {
                                                 }}
                                             />
                                             <CustomInput
+                                                onChangeText={(password) => this.setState({
+                                                    ...this.state,
+                                                    password
+                                                })}
                                                 labelText="Password"
                                                 id="pass"
                                                 formControlProps={{
@@ -130,8 +178,15 @@ class LoginPage extends React.Component {
                                         <CardFooter className={classes.cardFooter}>
                                             <Button simple color="primary" size="lg"
                                                     href="/home"
+                                                    onClick={this.signIn}
                                                     >
-                                                Sign in
+                                                Log in
+                                            </Button>
+                                            <Button simple color="primary" size="lg"
+                                                    href="/home"
+                                                    onClick={this.register}
+                                            >
+                                                Register
                                             </Button>
                                         </CardFooter>
                                     </form>
